@@ -1,3 +1,4 @@
 db.sqlite3
-snippets/__pycache__/*.*
-tutorial/__pycache__/*.*
+snippets/__pycache__/
+snippets/migrations/__pycache__/
+*.pyc
