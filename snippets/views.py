@@ -25,7 +25,8 @@
 # generics.RetrieveUpdateDestroyAPIView class
 
 from rest_framework import generics, permissions, renderers
-from rest_framework.decorators import api_view
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
@@ -85,11 +86,14 @@ class SnippetHighlight(generics.GenericAPIView):
         return Response(snippet.highlighted)
 
 
-class UserList(generics.ListAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetail(generics.RetrieveAPIView):
+# Here we've used the ReadOnlyModelViewSet class to automatically
+# provide the default 'read-only' operations. We're still setting
+# the queryset and serializer_class attributes exactly as we did
+# when we were using regular views, but we no longer need to provide
+# the same information to two separate classes.
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `detail` actions.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
