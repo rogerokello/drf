@@ -25,6 +25,7 @@
 from django.http import Http404
 from rest_framework import status
 from rest_framework.views import APIView
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
@@ -63,6 +64,7 @@ class SnippetDetail(APIView):
         serializer = SnippetSerializer(snippet)
         return Response(serializer.data)
 
+    @csrf_exempt
     def put(self, request, pk, format=None):
         snippet = self.get_object(pk)
         serializer = SnippetSerializer(snippet, data=request.data)
@@ -71,6 +73,7 @@ class SnippetDetail(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @csrf_exempt
     def delete(self, request, pk, format=None):
         snippet = self.get_object(pk)
         snippet.delete()
