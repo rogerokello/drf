@@ -40,6 +40,17 @@ class SnippetList(generics.ListCreateAPIView):
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
+    # Right now, if we created a code snippet, there'd be no way of associating the user that
+    # created the snippet, with the snippet instance. The user isn't sent as part of the
+    # serialized representation, but is instead a property of the incoming request.
+    # The way we deal with that is by overriding a .perform_create() method on our snippet
+    # views, that allows us to modify how the instance save is managed, and handle any
+    # information that is implicit in the incoming request or requested URL.
+    def perform_create(self, serializer):
+        # The create() method of our serializer will now be passed an additional 'owner' field,
+        # along with the validated data from the request.
+        serializer.save(owner=self.request.user)
+
 
 # The generics.RetrieveUpdateDestroyAPIView class provides the functionality for
 # the retrieval of an item, Update of an item and Deleting of an item.
