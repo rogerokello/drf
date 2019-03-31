@@ -1,4 +1,2 @@
 db.sqlite3
-snippets/__pycache__/
-snippets/migrations/__pycache__/
-*.pyc
+**/__pycache__
