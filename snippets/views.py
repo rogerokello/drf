@@ -24,7 +24,7 @@
 # implemented in REST framework's the generics.ListCreateAPIView class and the 
 # generics.RetrieveUpdateDestroyAPIView class
 
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, renderers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -74,6 +74,15 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+
+
+class SnippetHighlight(generics.GenericAPIView):
+    queryset = Snippet.objects.all()
+    renderer_classes = (renderers.StaticHTMLRenderer,)
+
+    def get(self, request, *args, **kwargs):
+        snippet = self.get_object()
+        return Response(snippet.highlighted)
 
 
 class UserList(generics.ListAPIView):
