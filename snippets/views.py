@@ -29,6 +29,7 @@ from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer, UserSerializer
+from snippets.permissions import IsOwnerOrReadOnly
 
 
 # The generics.ListCreateAPIView class provides the core functionality for the
@@ -59,7 +60,7 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update or delete a code snippet.
     """
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
