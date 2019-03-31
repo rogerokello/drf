@@ -24,7 +24,7 @@
 # implemented in REST framework's the generics.ListCreateAPIView class and the 
 # generics.RetrieveUpdateDestroyAPIView class
 
-from rest_framework import generics
+from rest_framework import generics, permissions
 
 from django.contrib.auth.models import User
 from snippets.models import Snippet
@@ -37,6 +37,7 @@ class SnippetList(generics.ListCreateAPIView):
     """
     List all code snippets, or create a new snippet.
     """
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
@@ -58,6 +59,7 @@ class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update or delete a code snippet.
     """
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
