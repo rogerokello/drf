@@ -21,50 +21,31 @@
 # ----------- Wrapping API views --------------
 # The create/retrieve/update/delete operations that we've been using so far are going to be
 # pretty similar for any model-backed API views we create. Those bits of common behaviour are
-# implemented in REST framework's mixin classes.
+# implemented in REST framework's the generics.ListCreateAPIView class and the 
+# generics.RetrieveUpdateDestroyAPIView class
 
-from rest_framework import mixins
 from rest_framework import generics
 
 from snippets.models import Snippet
 from snippets.serializers import SnippetSerializer
 
 
-# Here we're building our view using GenericAPIView, and adding in ListModelMixin and
-# CreateModelMixin. The base class(GenericAPIView) provides the core functionality, and the
-# mixin classes provide the .list() and .create() actions. We're then explicitly binding the
-# get and post methods to the appropriate actions.
-class SnippetList(mixins.ListModelMixin, mixins.CreateModelMixin,
-                  generics.GenericAPIView):
+# The generics.ListCreateAPIView class provides the core functionality for the
+# list and create operations
+class SnippetList(generics.ListCreateAPIView):
     """
     List all code snippets, or create a new snippet.
     """
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-
-# Again we're using the GenericAPIView class to provide the core functionality, and adding
-# in mixins to provide the .retrieve(), .update() and .destroy() actions.
-class SnippetDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin, generics.GenericAPIView):
+# The generics.RetrieveUpdateDestroyAPIView class provides the functionality for
+# the retrieval of an item, Update of an item and Deleting of an item.
+class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     Retrieve, update or delete a code snippet.
     """
-
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
