@@ -19,8 +19,9 @@
 # It's a good idea to use these throughout rather than using numeric identifiers.
 
 # ----------- Wrapping API views --------------
-# 1. The @api_view decorator for working with function based views.
-# 2. The APIView class for working with class-based views.
+# The create/retrieve/update/delete operations that we've been using so far are going to be 
+# pretty similar for any model-backed API views we create. Those bits of common behaviour are
+# implemented in REST framework's mixin classes.
 
 from django.http import Http404
 from rest_framework import status
