@@ -44,46 +44,35 @@ def api_root(request, format=None):
     })
 
 
-# The generics.ListCreateAPIView class provides the core functionality for the
-# list and create operations
-class SnippetList(generics.ListCreateAPIView):
+class SnippetViewSet(viewsets.ModelViewSet):
     """
-    List all code snippets, or create a new snippet.
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
     """
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
 
-    # Right now, if we created a code snippet, there'd be no way of associating the user that
-    # created the snippet, with the snippet instance. The user isn't sent as part of the
-    # serialized representation, but is instead a property of the incoming request.
-    # The way we deal with that is by overriding a .perform_create() method on our snippet
-    # views, that allows us to modify how the instance save is managed, and handle any
-    # information that is implicit in the incoming request or requested URL.
-    def perform_create(self, serializer):
-        # The create() method of our serializer will now be passed an additional 'owner' field,
-        # along with the validated data from the request.
-        serializer.save(owner=self.request.user)
-
-
-# The generics.RetrieveUpdateDestroyAPIView class provides the functionality for
-# the retrieval of an item, Update of an item and Deleting of an item.
-class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Retrieve, update or delete a code snippet.
-    """
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
-    queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
-
-
-class SnippetHighlight(generics.GenericAPIView):
-    queryset = Snippet.objects.all()
-    renderer_classes = (renderers.StaticHTMLRenderer,)
-
-    def get(self, request, *args, **kwargs):
+    # Notice that we've also used the @action decorator to create a
+    # custom action, named highlight. This decorator can be used to
+    # add any custom endpoints that don't fit into the standard
+    # create/update/delete style.
+    # Custom actions which use the @action decorator will respond to
+    # GET requests by default. We can use the methods argument if we
+    # wanted an action that responded to POST requests.
+    # The URLs for custom actions by default depend on the method name
+    # itself. If you want to change the way url should be constructed,
+    # you can include url_path as a decorator keyword argument.
+    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    def highlight(self, request, *args, **kwargs):
         snippet = self.get_object()
         return Response(snippet.highlighted)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 # Here we've used the ReadOnlyModelViewSet class to automatically
